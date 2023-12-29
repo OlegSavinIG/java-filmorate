@@ -8,8 +8,6 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class UserControllerTest {
 UserController userController;
     @BeforeEach

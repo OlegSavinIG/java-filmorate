@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 @EqualsAndHashCode(callSuper = true)
-public class User extends BaseUnit{
+public class User extends BaseUnit {
     @Email(message = "Некорректно введена почта")
     private String email;
     private String login;

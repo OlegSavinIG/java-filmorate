@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @Slf4j
-public class UserController extends BaseController<User>{
+public class UserController extends BaseController<User> {
     @Override
     public void validate(User user) {
         if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
@@ -22,18 +22,21 @@ public class UserController extends BaseController<User>{
         }
 
     }
+
     @GetMapping
-    public List<User> getAll () {
+    public List<User> getAll() {
         log.info("Вызов списка пользователей");
-       return super.getStorage();
+        return super.getStorage();
     }
+
     @PostMapping
-    public User create (@Valid @RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         log.info("Создание пользователя");
         return super.create(user);
     }
+
     @PutMapping
-    public User update (@Valid @RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         log.info("Обновление пользователя");
         return super.update(user);
     }

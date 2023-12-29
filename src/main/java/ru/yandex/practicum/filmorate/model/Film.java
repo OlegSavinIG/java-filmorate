@@ -13,12 +13,12 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 public class Film extends BaseUnit {
     @NotBlank(message = "Название не может быть пустым")
-    private  String name;
+    private String name;
     @Size(max = 200)
-    private  String description;
+    private String description;
     @NotNull
-    private  LocalDate releaseDate;
+    private LocalDate releaseDate;
     @Min(1)
-    private  int duration;
+    private int duration;
 
 }

@@ -23,7 +23,8 @@ public abstract class BaseController<T extends BaseUnit> {
         validate(data);
         if (!storage.containsKey(data.getId())) {
             throw new ValidationException("Этих данных не существует");
-        } storage.put(data.getId(), data);
+        }
+        storage.put(data.getId(), data);
         return data;
     }
 
