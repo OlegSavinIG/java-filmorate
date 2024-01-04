@@ -13,14 +13,12 @@ public abstract class BaseController<T extends BaseUnit> {
     private long generatedId;
 
     public T create(T data) {
-        validate(data);
         data.setId(++generatedId);
         storage.put(data.getId(), data);
         return data;
     }
 
     public T update(T data) {
-        validate(data);
         if (!storage.containsKey(data.getId())) {
             throw new ValidationException("Этих данных не существует");
         }
@@ -32,5 +30,4 @@ public abstract class BaseController<T extends BaseUnit> {
         return new ArrayList<>(storage.values());
     }
 
-    public abstract void validate(T t);
 }
