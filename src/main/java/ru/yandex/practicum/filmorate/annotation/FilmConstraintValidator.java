@@ -1,16 +1,15 @@
 package ru.yandex.practicum.filmorate.annotation;
 
-import ru.yandex.practicum.filmorate.model.Film;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 
 public class FilmConstraintValidator implements ConstraintValidator<MinFilmDate, LocalDate> {
     private LocalDate minimumDate;
+
     @Override
     public void initialize(MinFilmDate constraintAnnotation) {
-       minimumDate = LocalDate.parse(constraintAnnotation.value());
+        minimumDate = LocalDate.parse(constraintAnnotation.value());
     }
 
     @Override
