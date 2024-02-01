@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,10 +40,10 @@ public class UserService {
     }
 
     public User update(User user) {
-        if (userExist(user.getId())) {
-            return userStorage.add(user);
+        if (!userExist(user.getId())) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Такого пользователя не существует");
         }
-        throw new NotExistException(HttpStatus.CONFLICT, "Такого пользователя не существует");
+        return userStorage.update(user);
     }
 
     public void delete(long id) {
@@ -56,6 +57,9 @@ public class UserService {
     }
 
     public User getById(long id) {
+        if (!userExist(id)) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Такой пользователь не существует");
+        }
         return userStorage.getById(id);
     }
 
@@ -82,10 +86,13 @@ public class UserService {
     public Set<User> getAllSameFriends(Long id, Long otherId) {
         if (userExist(id) && userExist(otherId)) {
             User userFirst = getById(id);
+            User userSecond = getById(otherId);
+            if (userFirst.getFriendList() == null || userSecond.getFriendList() == null) {
+                return new HashSet<>();
+            }
             Set<User> firstFriendList = userFirst.getFriendList().stream()
                     .map(i -> userStorage.getById(i))
                     .collect(Collectors.toSet());
-            User userSecond = getById(otherId);
             Set<User> secondFriendList = userSecond.getFriendList().stream()
                     .map(i -> userStorage.getById(i))
                     .collect(Collectors.toSet());
@@ -96,7 +103,8 @@ public class UserService {
         } else throw new NotExistException(HttpStatus.NOT_FOUND, "Одного из ползователей не существует");
     }
 
-    public Set<User> getAllFriends(User user) {
+    public Set<User> getAllFriends(long id) {
+        User user = getById(id);
         return user.getFriendList().stream()
                 .map(i -> userStorage.getById(i))
                 .collect(Collectors.toSet());

@@ -23,24 +23,21 @@ public class FilmService {
     }
 
     private boolean filmExist(long filmId) {
-        return getById(filmId) != null;
+        return filmStorage.getById(filmId) != null;
     }
 
     public Film createFilm(Film film) {
-        if (getStorage().stream()
-                .map(i -> i.getName())
-                .anyMatch(i -> i.equals(film.getName()))) {
+        if (getStorage().stream().map(i -> i.getName()).anyMatch(i -> i.equals(film.getName()))) {
             throw new AlreadyExistException("Такой фильм уже существует");
         }
         return filmStorage.add(film);
     }
 
     public Film update(Film film) {
-        if (filmStorage.getStorage().stream()
-                .anyMatch(i -> i.equals(film))) {
-            return filmStorage.add(film);
+        if (!filmExist(film.getId())) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Такого фильмa не существует");
         }
-        throw new NotExistException(HttpStatus.CONFLICT, "Такого фильм не существует");
+        return filmStorage.update(film);
     }
 
     public void delete(long id) {
@@ -52,7 +49,10 @@ public class FilmService {
     }
 
     public Film getById(long id) {
-        return getById(id);
+        if (!filmExist(id)) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Такой фильм не существует");
+        }
+        return filmStorage.getById(id);
     }
 
     public void addLike(long filmId, long userId) {
@@ -63,7 +63,11 @@ public class FilmService {
 
     public void deleteLike(long filmId, long userId) {
         if (filmExist(filmId)) {
-            getById(filmId).getLikes().remove(userId);
+            Film film = getById(filmId);
+            if (!film.getLikes().contains(userId)) {
+                throw new NotExistException(HttpStatus.CONFLICT, "Такого пользователя нет среди лайков");
+            }
+            film.getLikes().remove(userId);
         } else throw new NotExistException(HttpStatus.CONFLICT, "Такого фильм не существует");
 
     }

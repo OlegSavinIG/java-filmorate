@@ -38,8 +38,7 @@ public class UserController {
     @GetMapping("/{id}/friends")
     public Set<User> getAllFriends(@NotNull @PathVariable Long id) {
         log.info("Получение списка друзей");
-        User user = userService.getById(id);
-        return userService.getAllFriends(userService.getById(id));
+        return userService.getAllFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

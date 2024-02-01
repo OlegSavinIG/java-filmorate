@@ -23,6 +23,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User update(User user) {
+        user.setFriendList(userStorage.get(user.getId()).getFriendList());
         userStorage.put(user.getId(), user);
         return user;
     }
