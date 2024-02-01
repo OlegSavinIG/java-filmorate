@@ -13,7 +13,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 public class ControllerExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ErrorResponse ValidateExceptionHandler(ValidationException e) {
+    private ErrorResponse validateExceptionHandler(ValidationException e) {
         return new ErrorResponse("Ошибка валидации", e.getMessage());
     }
 
@@ -25,7 +25,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    private ErrorResponse ExceptionHandler(Exception e) {
+    private ErrorResponse exceptionHandler(Exception e) {
         return new ErrorResponse("Ошибка", e.getMessage());
     }
 
