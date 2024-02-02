@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private FilmService filmService;
+    private final FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -44,11 +44,10 @@ public class FilmController {
     }
 
     @PostMapping
-    public ResponseEntity<Film> create(@NotNull @Valid @RequestBody Film film) {
+    public Film create(@NotNull @Valid @RequestBody Film film) {
         log.info("Создание нового фильма");
         film.setLikes(new HashSet<>());
-        Film createdFilm = filmService.createFilm(film);
-        return ResponseEntity.ok(createdFilm);
+        return filmService.createFilm(film);
     }
 
     @PutMapping("/{id}/like/{userId}")

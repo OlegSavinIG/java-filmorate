@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    public UserStorage userStorage;
+    private final UserStorage userStorage;
 
     @Autowired
     public UserService(UserStorage userStorage) {
@@ -87,18 +87,13 @@ public class UserService {
         if (userExist(id) && userExist(otherId)) {
             User userFirst = getById(id);
             User userSecond = getById(otherId);
-            if (userFirst.getFriendList() == null || userSecond.getFriendList() == null) {
+            Set<Long> commonFriends = new HashSet<>(userFirst.getFriendList());
+            commonFriends.retainAll(userSecond.getFriendList());
+            if (commonFriends.isEmpty()) {
                 return new HashSet<>();
             }
-            Set<User> firstFriendList = userFirst.getFriendList().stream()
+            return commonFriends.stream()
                     .map(i -> userStorage.getById(i))
-                    .collect(Collectors.toSet());
-            Set<User> secondFriendList = userSecond.getFriendList().stream()
-                    .map(i -> userStorage.getById(i))
-                    .collect(Collectors.toSet());
-
-            return firstFriendList.stream()
-                    .filter(f -> secondFriendList.contains(f))
                     .collect(Collectors.toSet());
         } else throw new NotExistException(HttpStatus.NOT_FOUND, "Одного из ползователей не существует");
     }

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -23,7 +24,7 @@ public class User extends BaseUnit {
     private String name;
     @Past(message = "День рождения не может быть в будущем")
     private LocalDate birthday;
-    private Set<Long> friendList;
+    private Set<Long> friendList = new HashSet<>();
 
 
 }

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
 
-    FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
     public FilmService(FilmStorage filmStorage) {
@@ -73,8 +73,9 @@ public class FilmService {
     }
 
     public List<Film> getTopFilms(int count) {
-        List<Film> films = getStorage().stream().collect(Collectors.toList());
-        films.sort(Comparator.comparing(Film::getLikesSize).reversed());
-        return films.stream().limit(count).collect(Collectors.toList());
+        return getStorage().stream()
+                .sorted(Comparator.comparing(Film::getLikesSize).reversed())
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }
