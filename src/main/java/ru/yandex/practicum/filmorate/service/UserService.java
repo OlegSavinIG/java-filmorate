@@ -98,10 +98,10 @@ public class UserService {
         } else throw new NotExistException(HttpStatus.NOT_FOUND, "Одного из ползователей не существует");
     }
 
-    public Set<User> getAllFriends(long id) {
+    public List<User> getAllFriends(long id) {
         User user = getById(id);
         return user.getFriendList().stream()
                 .map(i -> userStorage.getById(i))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 }
