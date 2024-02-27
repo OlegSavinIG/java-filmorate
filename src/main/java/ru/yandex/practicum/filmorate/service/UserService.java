@@ -31,6 +31,7 @@ public class UserService {
         }
         return userStorage.add(user);
     }
+
     public List<User> getAllUsers() {
         return userStorage.getStorage(); //
     }
