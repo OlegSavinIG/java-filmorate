@@ -1,0 +1,15 @@
+ru\yandex\practicum\filmorate\model\User.class
+ru\yandex\practicum\filmorate\service\UserService.class
+ru\yandex\practicum\filmorate\model\BaseUnit$BaseUnitBuilder.class
+ru\yandex\practicum\filmorate\model\Film.class
+ru\yandex\practicum\filmorate\service\GenreService.class
+ru\yandex\practicum\filmorate\model\Film$FilmBuilderImpl.class
+ru\yandex\practicum\filmorate\annotation\MinFilmDate.class
+ru\yandex\practicum\filmorate\annotation\FilmConstraintValidator.class
+ru\yandex\practicum\filmorate\exception\AlreadyExistException.class
+ru\yandex\practicum\filmorate\model\User$UserBuilder.class
+ru\yandex\practicum\filmorate\storage\UserStorage.class
+ru\yandex\practicum\filmorate\storage\FilmStorage.class
+ru\yandex\practicum\filmorate\model\Film$FilmBuilder.class
+ru\yandex\practicum\filmorate\model\BaseUnit.class
+ru\yandex\practicum\filmorate\model\User$UserBuilderImpl.class
