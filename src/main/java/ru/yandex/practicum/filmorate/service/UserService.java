@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,90 +20,68 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage")UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
-    private boolean userExist(long userId) {
-        User user = userStorage.getById(userId);
-        return user != null;
-    }
-
     public User createUser(User user) {
-        if (user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-        if (getStorage().stream()
-                .map(i -> i.getEmail())
-                .anyMatch(i -> i.equals(user.getEmail()))) {
+        user.setName(Optional.ofNullable(user.getName()).orElse(user.getLogin()));
+        if (userStorage.getStorage().stream().anyMatch(u -> u.getEmail().equals(user.getEmail()))) {
             throw new AlreadyExistException("Такой пользователь уже существует");
         }
         return userStorage.add(user);
     }
+    public List<User> getAllUsers() {
+        return userStorage.getStorage(); //
+    }
 
     public User update(User user) {
-        if (!userExist(user.getId())) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Такого пользователя не существует");
-        }
-        return userStorage.update(user);
+        return Optional.ofNullable(userStorage.getById(user.getId()))
+                .map(existingUser -> userStorage.update(user))
+                .orElseThrow(() -> new NotExistException(HttpStatus.NOT_FOUND, "Такого пользователя не существует"));
     }
 
     public void delete(long id) {
-        if (userExist(id)) {
-            userStorage.delete(id);
-        } else throw new NotExistException(HttpStatus.NOT_FOUND, "Такой пользователь не существует");
-    }
-
-    public List<User> getStorage() {
-        return userStorage.getStorage();
+        if (userStorage.getById(id) == null) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Такой пользователь не существует");
+        }
+        userStorage.delete(id);
     }
 
     public User getById(long id) {
-        if (!userExist(id)) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Такой пользователь не существует");
-        }
-        return userStorage.getById(id);
+        return Optional.ofNullable(userStorage.getById(id))
+                .orElseThrow(() -> new NotExistException(HttpStatus.NOT_FOUND, "Такой пользователь не существует"));
     }
 
     public void addFriend(long firstUserId, long secondUserId) {
-        if (userExist(firstUserId) && userExist(secondUserId)) {
-            User firstUser = userStorage.getById(firstUserId);
-            User secondUser = userStorage.getById(secondUserId);
-
-            firstUser.getFriendList().add(secondUser.getId());
-            secondUser.getFriendList().add(firstUser.getId());
-        } else throw new NotExistException(HttpStatus.NOT_FOUND, "Одного из ползователей не существует");
+        User firstUser = getById(firstUserId);
+        User secondUser = getById(secondUserId);
+        firstUser.getFriendList().add(secondUserId);
+        secondUser.getFriendList().add(firstUserId);
     }
 
     public void deleteFriend(long firstUserId, long secondUserId) {
-        if (userExist(firstUserId) && userExist(secondUserId)) {
-            User firstUser = userStorage.getById(firstUserId);
-            User secondUser = userStorage.getById(secondUserId);
-
-            firstUser.getFriendList().remove(secondUser.getId());
-            secondUser.getFriendList().remove(firstUser.getId());
-        } else throw new NotExistException(HttpStatus.NOT_FOUND, "Одного из ползователей не существует");
+        User firstUser = getById(firstUserId);
+        User secondUser = getById(secondUserId);
+        firstUser.getFriendList().remove(secondUserId);
+        secondUser.getFriendList().remove(firstUserId);
     }
 
     public Set<User> getAllSameFriends(Long id, Long otherId) {
-        if (userExist(id) && userExist(otherId)) {
-            User userFirst = getById(id);
-            User userSecond = getById(otherId);
-            Set<Long> commonFriends = new HashSet<>(userFirst.getFriendList());
-            commonFriends.retainAll(userSecond.getFriendList());
-            if (commonFriends.isEmpty()) {
-                return new HashSet<>();
-            }
-            return commonFriends.stream()
-                    .map(i -> userStorage.getById(i))
-                    .collect(Collectors.toSet());
-        } else throw new NotExistException(HttpStatus.NOT_FOUND, "Одного из ползователей не существует");
+        User userFirst = getById(id);
+        User userSecond = getById(otherId);
+        Set<Long> commonFriendsIds = new HashSet<>(userFirst.getFriendList());
+        commonFriendsIds.retainAll(userSecond.getFriendList());
+
+        return commonFriendsIds.stream()
+                .map(this::getById)
+                .collect(Collectors.toSet());
     }
 
     public List<User> getAllFriends(long id) {
         User user = getById(id);
         return user.getFriendList().stream()
-                .map(i -> userStorage.getById(i))
+                .map(this::getById)
                 .collect(Collectors.toList());
     }
 }

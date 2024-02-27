@@ -1,10 +1,4 @@
 -- Очистка существующих таблиц
-DROP TABLE IF EXISTS film_genres;
-DROP TABLE IF EXISTS user_friends;
-DROP TABLE IF EXISTS films;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS genres;
-DROP TABLE IF EXISTS mpa_ratings;
 
 -- Создание таблицы для рейтингов MPA
 CREATE TABLE mpa_ratings (
