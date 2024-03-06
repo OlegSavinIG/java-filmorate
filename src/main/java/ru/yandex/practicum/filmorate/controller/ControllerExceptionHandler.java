@@ -13,19 +13,19 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 public class ControllerExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ErrorResponse validateExceptionHandler(ValidationException e) {
+    public ErrorResponse validateExceptionHandler(ValidationException e) {
         return new ErrorResponse("Ошибка валидации", e.getMessage());
     }
 
     @ExceptionHandler(NotExistException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ErrorResponse notExistExceptionHandler(NotExistException e) {
+    public ErrorResponse notExistExceptionHandler(NotExistException e) {
         return new ErrorResponse("Ошибка: обьект не найден ", e.getMessage());
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    private ErrorResponse exceptionHandler(Exception e) {
+    public ErrorResponse exceptionHandler(Exception e) {
         return new ErrorResponse("Ошибка", e.getMessage());
     }
 
