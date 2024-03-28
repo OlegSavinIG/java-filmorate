@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
 public enum Genre {
-    COMEDY,
-    DRAMA,
-    CARTOON,
-    THRILLER,
-    DOCUMENTARY,
-    ACTION
+    КОМЕДИЯ,
+    ДРАМА,
+    МУЛЬТФИЛЬМ,
+    ТРИЛЛЕР,
+    ДОКУМЕНТАЛЬНЫЙ,
+    БОЕВИК
 }
