@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.storage;
+package ru.yandex.practicum.filmorate.dao;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
@@ -23,7 +23,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-        user.setFriendList(userStorage.get(user.getId()).getFriendList());
         userStorage.put(user.getId(), user);
         return user;
     }

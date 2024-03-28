@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.storage;
+package ru.yandex.practicum.filmorate.dao;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -24,8 +24,22 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public void addLike(long filmId, long userId) {
+
+    }
+
+    @Override
+    public void deleteLike(long filmId, long userId) {
+
+    }
+
+    @Override
+    public List<Film> getTopFilms(int count) {
+        return null;
+    }
+
+    @Override
     public Film update(Film film) {
-        film.setLikes(filmStorage.get(film.getId()).getLikes());
         filmStorage.put(film.getId(), film);
         return film;
     }
