@@ -12,9 +12,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository

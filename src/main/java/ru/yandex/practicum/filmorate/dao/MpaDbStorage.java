@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.util.List;
 import java.util.Optional;
+
 @Slf4j
 @Repository
 public class MpaDbStorage implements MpaStorage {

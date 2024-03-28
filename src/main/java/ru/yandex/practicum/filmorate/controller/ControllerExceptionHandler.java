@@ -16,6 +16,7 @@ public class ControllerExceptionHandler {
     public ErrorResponse validateExceptionHandler(ValidationException e) {
         return new ErrorResponse("Ошибка валидации", e.getMessage());
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationExceptions(MethodArgumentNotValidException ex) {

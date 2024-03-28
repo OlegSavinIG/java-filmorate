@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -29,7 +28,7 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilmById( @PathVariable Long id) {
+    public Film getFilmById(@PathVariable Long id) {
         log.info("Получение фильма");
         return filmService.getById(id);
     }
@@ -41,7 +40,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create( @Valid @RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
         log.info("Создание нового фильма");
         return filmService.createFilm(film);
     }

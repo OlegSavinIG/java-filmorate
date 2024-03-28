@@ -2,23 +2,18 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
 @Slf4j
 @Repository
 public class UserDbStorage implements UserStorage {
@@ -28,7 +23,8 @@ public class UserDbStorage implements UserStorage {
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    private RowMapper<User> userRowMapper = (ResultSet rs, int rowNum) ->  User.builder()
+
+    private RowMapper<User> userRowMapper = (ResultSet rs, int rowNum) -> User.builder()
             .id(rs.getLong("user_id"))
             .email(rs.getString("email"))
             .login(rs.getString("login"))
