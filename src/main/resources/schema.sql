@@ -6,6 +6,14 @@ create table if not exists users (
     name VARCHAR(255),
     birthday DATE not null
 );
+create table if not exists genres (
+    genre_id INT not null primary key,
+    name VARCHAR(64) not null
+);
+create table if not exists mpa (
+    mpa_id INT not null primary key,
+    name VARCHAR(64) not null
+);
 
 create table if not exists films (
     film_id BIGINT  auto_increment primary key ,
@@ -14,8 +22,7 @@ create table if not exists films (
     release_date DATE not null,
     duration INT not null check (duration > 0),
     rate BIGINT,
-    mpa_id INT  references mpa(mpa_id),
-    deleted bool default false
+    mpa_id INT  references mpa(mpa_id)
 );
 
 create table if not exists friendships (
@@ -41,11 +48,4 @@ create table if not exists film_genres (
     foreign key (genre_id) references genres(genre_id)
 );
 
-create table if not exists genres (
-    genre_id INT not null primary key,
-    name VARCHAR(64) not null
-);
-create table if not exists mpa (
-    mpa_id INT not null primary key,
-    name VARCHAR(64) not null
-);
+

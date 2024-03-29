@@ -32,4 +32,13 @@ public class Film extends BaseUnit {
     private long rate;
     private List<Integer> genresIds = new ArrayList<>();
     private int mpaRatingId = 1;
+
+    public Film(String name, String description, LocalDate releaseDate, int duration, long rate, int mpaRatingId) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.rate = rate;
+        this.mpaRatingId = mpaRatingId;
+    }
 }
