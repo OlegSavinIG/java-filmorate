@@ -11,7 +11,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,15 +29,14 @@ public class Film extends BaseUnit {
     @Min(1)
     private int duration;
     private long rate;
-    private List<Integer> genresIds = new ArrayList<>();
-    private int mpaRatingId = 1;
+    private MpaRating mpa;
+    private List<Genre> genres;
 
-    public Film(String name, String description, LocalDate releaseDate, int duration, long rate, int mpaRatingId) {
+    public Film(String name, String description, LocalDate releaseDate, int duration, long rate) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.rate = rate;
-        this.mpaRatingId = mpaRatingId;
     }
 }

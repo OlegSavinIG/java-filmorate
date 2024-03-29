@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.util.List;
@@ -17,7 +19,7 @@ public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<MpaRating> mpaRatingRowMapper = (rs, rowNum) ->
-            MpaRating.valueOf(rs.getString("name").toUpperCase());
+            new MpaRating(rs.getInt("mpa_id"), rs.getString("name"));
 
     @Autowired
     public MpaDbStorage(JdbcTemplate jdbcTemplate) {
@@ -26,13 +28,18 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public List<MpaRating> findAll() {
-        String sql = "SELECT * FROM mpa";
+        String sql = "SELECT mpa_id, name FROM mpa";
         log.info("Выполнение запроса на получение всех MPA рейтингов.");
         return jdbcTemplate.query(sql, mpaRatingRowMapper);
     }
 
     @Override
     public Optional<MpaRating> findById(int id) {
+        String sqlChecker = "Select mpa_id from mpa where mpa_id = ?";
+        List<Integer> mpaId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getInt("mpa_id"));
+        if (mpaId.isEmpty()) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует МРА с таким id " + id);
+        }
         String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
         log.info("Выполнение запроса на получение MPA рейтинга с ID: {}", id);
         try {

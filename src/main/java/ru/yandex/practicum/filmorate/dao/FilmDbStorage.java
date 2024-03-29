@@ -2,36 +2,34 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final FilmMapper filmRowMapper;
+
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmMapper filmRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.filmRowMapper = filmRowMapper;
     }
 
-    private final RowMapper<Film> filmRowMapper = (ResultSet rs, int rowNum) -> Film.builder()
-            .id(rs.getLong("film_id"))
-            .name(rs.getString("name"))
-            .description(rs.getString("description"))
-            .releaseDate(rs.getDate("release_date").toLocalDate())
-            .duration(rs.getInt("duration"))
-            .rate(rs.getInt("rate"))
-            .build();
 
     @Override
     public Film add(Film film) {
@@ -45,12 +43,14 @@ public class FilmDbStorage implements FilmStorage {
             ps.setDate(3, Date.valueOf(film.getReleaseDate()));
             ps.setInt(4, film.getDuration());
             ps.setLong(5, film.getRate());
-            ps.setInt(6, film.getMpaRatingId());
+            ps.setInt(6, film.getMpa().getId());
             return ps;
         }, keyHolder);
         long filmId = keyHolder.getKey().longValue();
         film.setId(filmId);
-        addFilmGenres(filmId, film.getGenresIds());
+        addFilmGenres(filmId, film.getGenres().stream()
+                .map(Genre::getId)
+                .collect(Collectors.toList()));
         log.info("Фильм успешно добавлен с ID: {}", filmId);
         return film;
     }
@@ -64,6 +64,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getById(long id) {
+        String sqlChecker = "Select film_id from films where film_id = ?";
+        List<Long> filmIdId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getLong("film_id"));
+        if (filmIdId.isEmpty()) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует фильма с таким id " + id);
+        }
         String sql = "SELECT * FROM films WHERE film_id = ?";
         log.info("Получение фильма по ID: {}", id);
         return jdbcTemplate.queryForObject(sql, filmRowMapper, id);
@@ -82,7 +87,7 @@ public class FilmDbStorage implements FilmStorage {
                 " duration = ?, rate = ?, mpa_id = ? WHERE film_id = ?";
         log.info("Обновление фильма: {}", film);
         jdbcTemplate.update(sql, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
-                film.getDuration(), film.getRate(), film.getMpaRatingId(), film.getId());
+                film.getDuration(), film.getRate(), film.getMpa().getId(), film.getId());
         log.info("Фильм с ID: {} успешно обновлен", film.getId());
         return film;
     }

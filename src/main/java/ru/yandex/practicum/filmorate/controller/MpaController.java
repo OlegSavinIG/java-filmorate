@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class MpaController {
