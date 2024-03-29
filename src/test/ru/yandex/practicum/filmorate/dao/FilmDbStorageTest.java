@@ -23,7 +23,7 @@ class FilmDbStorageTest {
     @Test
     void testAddFilm() {
         FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1l, 1);
+        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
         Film savedFilm = filmDbStorage.add(film);
         assertThat(savedFilm).isNotNull();
         assertThat(savedFilm.getId()).isPositive();
@@ -32,7 +32,7 @@ class FilmDbStorageTest {
     @Test
     void testGetFilmById() {
         FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1l, 1);
+        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
         filmDbStorage.add(film);
         long id = film.getId();
         Film foundFilm = filmDbStorage.getById(id);
@@ -43,7 +43,7 @@ class FilmDbStorageTest {
     @Test
     void testDeleteFilm() {
         FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1l, 1);
+        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
         filmDbStorage.add(film);
         int sizeBeforeDelete = filmDbStorage.getStorage().size();
 
@@ -56,7 +56,7 @@ class FilmDbStorageTest {
     @Test
     void testUpdateFilm() {
         FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1l, 1);
+        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
         filmDbStorage.add(film);
         Film updatedFilm = filmDbStorage.update(film);
         assertThat(updatedFilm).isNotNull();
@@ -65,7 +65,7 @@ class FilmDbStorageTest {
     @Test
     void testAddLike() {
         FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1l, 1);
+        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
         User newUser = new User("newuser@email.com", "newlogin", "New User", LocalDate.of(2000, 1, 1));
         UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
         userStorage.add(newUser);
@@ -81,7 +81,7 @@ class FilmDbStorageTest {
     @Test
     void testDeleteLike() {
         FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1l, 1);
+        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
         User newUser = new User("newuser@email.com", "newlogin", "New User", LocalDate.of(2000, 1, 1));
         UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
         userStorage.add(newUser);
@@ -96,9 +96,9 @@ class FilmDbStorageTest {
     @Test
     void testGetTopFilms() {
         FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1l, 1);
-        Film film2 = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 2l, 1);
-        Film film3 = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 3l, 1);
+        Film film = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
+        Film film2 = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
+        Film film3 = new Film("TestFilm", "description", LocalDate.of(2000, 10, 12), 120, 1L, 1);
         filmDbStorage.add(film);
         filmDbStorage.add(film2);
         filmDbStorage.add(film3);
