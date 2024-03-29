@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -29,30 +28,26 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilmById(@NotNull @PathVariable Long id) {
+    public Film getFilmById(@PathVariable Long id) {
         log.info("Получение фильма");
-
         return filmService.getById(id);
     }
 
     @GetMapping("/popular")
     public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
         log.info("Получение списка лучших фильмов");
-
         return filmService.getTopFilms(count);
     }
 
     @PostMapping
-    public Film create(@NotNull @Valid @RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
         log.info("Создание нового фильма");
-        film.setLikes(new HashSet<>());
         return filmService.createFilm(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@NotNull @PathVariable Long id, @PathVariable Long userId) {
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Добавление лайка");
-
         filmService.addLike(id, userId);
     }
 
@@ -63,16 +58,14 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@NotNull @PathVariable Long id, @PathVariable Long userId) {
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Удаление лайка ");
-
         filmService.deleteLike(id, userId);
     }
 
     @DeleteMapping("/{id}")
     public void deleteFilmById(@NotNull @PathVariable Long id) {
         log.info("Удаление фильма");
-
         filmService.delete(id);
     }
 }

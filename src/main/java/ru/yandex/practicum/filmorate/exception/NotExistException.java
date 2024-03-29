@@ -8,6 +8,8 @@ public class NotExistException extends ResponseStatusException {
         super(status);
     }
 
+
+
     public NotExistException(HttpStatus status, String reason) {
         super(status, reason);
     }
