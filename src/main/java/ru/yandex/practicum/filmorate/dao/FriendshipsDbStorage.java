@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +31,6 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
             String sql = "INSERT into friendships (user_id, friend_id) values (?, ?)";
             log.info("Добавление дружбы между пользователями {} и {}", firstUserId, secondUserId);
             jdbcTemplate.update(sql, firstUserId, secondUserId);
-            jdbcTemplate.update(sql, secondUserId, firstUserId);
         }
     }
 
@@ -40,7 +40,6 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
             String sql = "DELETE from friendships  WHERE user_id = ? AND friend_id = ?";
             log.info("Удаление дружбы между пользователями {} и {}", firstUserId, secondUserId);
             jdbcTemplate.update(sql, firstUserId, secondUserId);
-            jdbcTemplate.update(sql, secondUserId, firstUserId);
         }
     }
 
@@ -59,22 +58,22 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
     }
 
     @Override
-    public List<User> getAllFriends(long id) {
+    public Set<User> getAllFriends(long id) {
         if (isUserExists(id)) {
-            String sql = "SELECT * from friendships where user_id = ?";
+            String sql = "SELECT friend_id from friendships where user_id = ?";
             log.info("Поиск друзей пользователя {}", id);
             List<Long> friendsId = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("friend_id"), id);
             if (friendsId.isEmpty()) {
                 log.info("Нет друзей у пользователя {}", id);
-                return Collections.emptyList();
+                return new HashSet<>();
             }
-            List<User> friends = friendsId.stream()
-                    .map(i -> userStorage.getById(i).get())
-                    .collect(Collectors.toList());
+            Set<User> friends = friendsId.stream()
+                    .map(i -> userStorage.getById(i).orElse(null))
+                    .collect(Collectors.toSet());
             return friends;
         }
         log.warn("Пользователь {} не найден", id);
-        return Collections.emptyList();
+        return Collections.emptySet();
     }
 
     private boolean isUserExists(long userId) {

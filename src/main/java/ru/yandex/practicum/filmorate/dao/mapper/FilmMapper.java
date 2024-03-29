@@ -35,9 +35,9 @@ public class FilmMapper implements RowMapper<Film> {
                 .build();
     }
 
-    private MpaRating getMpaRating(int mpaId) {
+    private MpaRating getMpaRating(int id) {
         String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{mpaId}, (rs, rowNum) -> new MpaRating(
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> new MpaRating(
                 rs.getInt("mpa_id"),
                 rs.getString("name")
         ));

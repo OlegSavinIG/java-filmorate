@@ -32,11 +32,8 @@ public class FriendshipService {
         return friendshipsStorage.getAllSameFriends(firstUserId, secondUserId);
     }
 
-    public List<User> getAllFriends(long id) {
-        List<User> allFriends = friendshipsStorage.getAllFriends(id);
-        if (allFriends.isEmpty()) {
-            throw new NotExistException(HttpStatus.BAD_REQUEST, "У пользователя нет друзей или неверный id");
-        }
+    public Set<User> getAllFriends(long id) {
+        Set<User> allFriends = friendshipsStorage.getAllFriends(id);
         return allFriends;
     }
 }

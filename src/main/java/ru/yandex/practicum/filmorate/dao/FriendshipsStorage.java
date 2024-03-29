@@ -12,5 +12,5 @@ public interface FriendshipsStorage {
 
     Set<User> getAllSameFriends(long id, long otherId);
 
-    List<User> getAllFriends(long id);
+    Set<User> getAllFriends(long id);
 }

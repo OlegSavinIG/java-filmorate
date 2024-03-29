@@ -33,6 +33,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film add(Film film) {
+        if (filmValidator(film)) {
+            throw new NotExistException(HttpStatus.BAD_REQUEST, "Проблема с передачей данных фильма");
+        }
         String sql = "INSERT INTO films (name, description, release_date, duration, rate, mpa_id) VALUES (?, ?, ?, ?, ?, ?)";
         log.info("Добавление фильма {}", film);
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -112,10 +115,30 @@ public class FilmDbStorage implements FilmStorage {
         return topFilms;
     }
 
-    public void addFilmGenres(long filmId, List<Integer> genreIds) {
+    private void addFilmGenres(long filmId, List<Integer> genreIds) {
         String sql = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
         for (Integer genreId : genreIds) {
             jdbcTemplate.update(sql, filmId, genreId);
         }
+    }
+
+    private boolean filmValidator(Film film) {
+        String sqlChecker = "Select mpa_id from mpa where mpa_id = ?";
+        List<Integer> mpaId = jdbcTemplate.query(sqlChecker, new Object[]{film.getMpa().getId()}, (rs, rowNum) -> rs.getInt("mpa_id"));
+        if (mpaId.isEmpty()) {
+            return true;
+        }
+        String sqlGenreChecker = "Select genre_id from genres where genre_id = ?";
+        List<Integer> genreIds = film.getGenres().stream()
+                .map(Genre::getId)
+                .collect(Collectors.toList());
+
+        for (Integer genreId : genreIds) {
+            List<Integer> result = jdbcTemplate.query(sqlGenreChecker, new Object[]{genreId}, (rs, rowNum) -> rs.getInt("genre_id"));
+            if (result.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

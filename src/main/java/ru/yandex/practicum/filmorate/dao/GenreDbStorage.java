@@ -8,10 +8,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.util.List;
 import java.util.Optional;
+
 @Slf4j
 @Repository
 public class GenreDbStorage implements GenreStorage {
