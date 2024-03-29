@@ -66,6 +66,7 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
                     .map(i -> userStorage.getById(i).get())
                     .collect(Collectors.toList());
             return friends;
-        } return null;
+        }
+        return null;
     }
 }
