@@ -30,7 +30,7 @@ class UserDbStorageTest {
         assertThat(addedUser)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .ignoringFields("id") // Игнорируем ID, так как он генерируется автоматически
+                .ignoringFields("id")
                 .isEqualTo(newUser);
 
     }
