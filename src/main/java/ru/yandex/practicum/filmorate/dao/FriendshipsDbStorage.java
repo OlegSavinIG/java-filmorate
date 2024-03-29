@@ -76,6 +76,7 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
         log.warn("Пользователь {} не найден", id);
         return Collections.emptyList();
     }
+
     private boolean isUserExists(long userId) {
         return userStorage.getById(userId).isPresent();
     }
