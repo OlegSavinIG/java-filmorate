@@ -1,8 +1,13 @@
+drop table if exists friendships;
+drop table if exists likes;
+drop table if exists users;
+drop table if exists film_genres;
+drop table if exists films;
 
 create table if not exists users (
     user_id BIGINT  auto_increment primary key ,
-    email VARCHAR(255) not null unique,
-    login VARCHAR(255) not null unique,
+    email VARCHAR(255) not null ,
+    login VARCHAR(255) not null ,
     name VARCHAR(255),
     birthday DATE not null
 );
@@ -20,7 +25,7 @@ create table if not exists films (
     name VARCHAR(255) not null,
     description VARCHAR(255),
     release_date DATE not null,
-    duration INT not null check (duration > 0),
+    duration INT not null ,
     rate BIGINT,
     mpa_id INT  references mpa(mpa_id)
 );

@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -18,12 +17,14 @@ public class UserService {
 
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage")UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
     public User createUser(User user) {
-        user.setName(Optional.ofNullable(user.getName()).orElse(user.getLogin()));
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+        }
         if (userStorage.getStorage().stream().anyMatch(u -> u.getEmail().equals(user.getEmail()))) {
             throw new AlreadyExistException("Такой пользователь уже существует");
         }
@@ -35,9 +36,10 @@ public class UserService {
     }
 
     public User update(User user) {
-        return Optional.ofNullable(userStorage.getById(user.getId()))
-                .map(existingUser -> userStorage.update(user))
-                .orElseThrow(() -> new NotExistException(HttpStatus.NOT_FOUND, "Такого пользователя не существует"));
+        if (userStorage.getById(user.getId()) == null) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Такого пользователя не существует");
+        }
+        return userStorage.update(user);
     }
 
     public void delete(long id) {
@@ -48,7 +50,7 @@ public class UserService {
     }
 
     public User getById(long id) {
-        return Optional.ofNullable(userStorage.getById(id))
-                .orElseThrow(() -> new NotExistException(HttpStatus.NOT_FOUND, "Такой пользователь не существует"));
+        return userStorage.getById(id)
+                .orElseThrow(() -> new NotExistException(HttpStatus.NOT_FOUND, "Не существует ользователя с таким id " + id));
     }
 }

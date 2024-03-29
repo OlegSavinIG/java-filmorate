@@ -4,6 +4,7 @@ package ru.yandex.practicum.filmorate.dao;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserStorage {
     User add(User user);
@@ -14,5 +15,5 @@ public interface UserStorage {
 
     List<User> getStorage();
 
-    User getById(long id);
+    Optional<User> getById(long id);
 }

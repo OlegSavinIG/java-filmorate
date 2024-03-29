@@ -2,36 +2,34 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotExistException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validator.UserValidator;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Repository
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final UserMapper userRowMapper = new UserMapper();
 
     @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    private RowMapper<User> userRowMapper = (ResultSet rs, int rowNum) -> User.builder()
-            .id(rs.getLong("user_id"))
-            .email(rs.getString("email"))
-            .login(rs.getString("login"))
-            .name(rs.getString("name"))
-            .birthday(rs.getDate("birthday").toLocalDate())
-            .build();
-
 
     @Override
     public User add(User user) {
@@ -76,9 +74,15 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User getById(long id) {
+    public Optional<User> getById(long id) {
+        String sqlChecker = "Select user_id from users where user_id = ?";
+        List<Long> userId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getLong("user_id"));
+        if (userId.isEmpty()) {
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует Ппльзователя с таким id " + id);
+        }
         String sql = "SELECT * FROM users WHERE user_id = ?";
         log.info("Получение пользователя с ID: {}", id);
-        return jdbcTemplate.queryForObject(sql, userRowMapper, id);
+        User user = jdbcTemplate.queryForObject(sql, userRowMapper, id);
+        return Optional.ofNullable(user);
     }
 }
