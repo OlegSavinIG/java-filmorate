@@ -23,7 +23,7 @@ public class User extends BaseUnit {
     private String name;
     @Past(message = "День рождения не может быть в будущем")
     private LocalDate birthday;
-    private List<Integer> friends;
+    private List<Integer> friendList;
 
     public User(String email, String login, String name, LocalDate birthday) {
         this.email = email;
