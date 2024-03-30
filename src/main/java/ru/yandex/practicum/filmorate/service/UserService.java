@@ -25,14 +25,14 @@ public class UserService {
         if (user.getName() == null) {
             user.setName(user.getLogin());
         }
-        if (userStorage.getStorage().stream().anyMatch(u -> u.getEmail().equals(user.getEmail()))) {
+        if (userStorage.getAllUsers().stream().anyMatch(u -> u.getEmail().equals(user.getEmail()))) {
             throw new AlreadyExistException("Такой пользователь уже существует");
         }
         return userStorage.add(user);
     }
 
     public List<User> getAllUsers() {
-        return userStorage.getStorage(); //
+        return userStorage.getAllUsers(); //
     }
 
     public User update(User user) {

@@ -20,6 +20,8 @@ public class GenreDbStorage implements GenreStorage {
 
     private final RowMapper<Genre> genreRowMapper = (rs, rowNum) ->
             new Genre(rs.getInt("genre_id"), rs.getString("name"));
+    private final String sqlGetAll = "SELECT * FROM genres";
+    private final String sqlFindById = "SELECT * FROM genres WHERE genre_id = ?";
 
 
     @Autowired
@@ -29,9 +31,8 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public List<Genre> findAll() {
-        String sql = "SELECT * FROM genres";
         log.info("Выполнение запроса на получение всех жанров.");
-        return jdbcTemplate.query(sql, genreRowMapper);
+        return jdbcTemplate.query(sqlGetAll, genreRowMapper);
     }
 
     @Override
@@ -41,8 +42,7 @@ public class GenreDbStorage implements GenreStorage {
         if (genreId.isEmpty()) {
             throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует жанра с таким id " + id);
         }
-        String sql = "SELECT * FROM genres WHERE genre_id = ?";
         log.info("Выполнение запроса на получение жанра с ID: {}", id);
-        return jdbcTemplate.query(sql, genreRowMapper, id).stream().findAny();
+        return jdbcTemplate.query(sqlFindById, genreRowMapper, id).stream().findAny();
     }
 }

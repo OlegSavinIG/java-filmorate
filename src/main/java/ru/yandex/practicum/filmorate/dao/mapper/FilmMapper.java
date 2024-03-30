@@ -53,7 +53,6 @@ public class FilmMapper implements RowMapper<Film> {
                 rs.getString("name")
         ));
         return genres.stream()
-                .filter(i -> i.getId() < 7)
                 .distinct()
                 .collect(Collectors.toList());
     }
