@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -116,13 +117,26 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void addFilmGenres(long filmId, List<Integer> genreIds) {
+        String existingGenresSql = "SELECT genre_id FROM film_genres WHERE film_id = ?";
+        List<Integer> existingGenreIds = jdbcTemplate.queryForList(existingGenresSql, new Object[]{filmId}, Integer.class);
+
+        List<Integer> newGenreIds = genreIds.stream()
+                .distinct()
+                .filter(id -> !existingGenreIds.contains(id))
+                .collect(Collectors.toList());
+
         String sql = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
-        for (Integer genreId : genreIds) {
+        for (Integer genreId : newGenreIds) {
             jdbcTemplate.update(sql, filmId, genreId);
         }
     }
 
+
     private boolean filmValidator(Film film) {
+        if (film.getGenres() == null) {
+            film.setGenres(Collections.emptyList());
+        }
+
         String sqlChecker = "Select mpa_id from mpa where mpa_id = ?";
         List<Integer> mpaId = jdbcTemplate.query(sqlChecker, new Object[]{film.getMpa().getId()}, (rs, rowNum) -> rs.getInt("mpa_id"));
         if (mpaId.isEmpty()) {
