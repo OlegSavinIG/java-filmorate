@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FriendshipService;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -19,8 +18,8 @@ public class FriendshipsController {
     }
 
     @GetMapping("/users/{id}/friends")
-    public ResponseEntity<List<User>> findFriends(@PathVariable Long id) {
-        List<User> friends = friendshipService.getAllFriends(id);
+    public ResponseEntity<Set<User>> findFriends(@PathVariable Long id) {
+        Set<User> friends = friendshipService.getAllFriends(id);
         return ResponseEntity.ok(friends);
     }
 

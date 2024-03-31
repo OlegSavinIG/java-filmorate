@@ -13,7 +13,7 @@ public interface UserStorage {
 
     void delete(long id);
 
-    List<User> getStorage();
+    List<User> getAllUsers();
 
     Optional<User> getById(long id);
 }

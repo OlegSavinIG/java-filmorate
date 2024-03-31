@@ -31,6 +31,7 @@ public class Film extends BaseUnit {
     private long rate;
     private MpaRating mpa;
     private List<Genre> genres;
+    private List<Integer> likes;
 
     public Film(String name, String description, LocalDate releaseDate, int duration, long rate) {
         this.name = name;

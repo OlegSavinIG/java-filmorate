@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class FilmMapper implements RowMapper<Film> {
@@ -35,9 +36,9 @@ public class FilmMapper implements RowMapper<Film> {
                 .build();
     }
 
-    private MpaRating getMpaRating(int mpaId) {
+    private MpaRating getMpaRating(int id) {
         String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{mpaId}, (rs, rowNum) -> new MpaRating(
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> new MpaRating(
                 rs.getInt("mpa_id"),
                 rs.getString("name")
         ));
@@ -47,10 +48,12 @@ public class FilmMapper implements RowMapper<Film> {
         String sql = "SELECT g.genre_id, g.name FROM genres g " +
                 "INNER JOIN film_genres fg ON g.genre_id = fg.genre_id " +
                 "WHERE fg.film_id = ?";
-        return jdbcTemplate.query(sql, new Object[]{filmId}, (rs, rowNum) -> new Genre(
+        List<Genre> genres = jdbcTemplate.query(sql, new Object[]{filmId}, (rs, rowNum) -> new Genre(
                 rs.getInt("genre_id"),
                 rs.getString("name")
         ));
+        return genres.stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
-
 }

@@ -20,6 +20,8 @@ public class MpaDbStorage implements MpaStorage {
 
     private final RowMapper<MpaRating> mpaRatingRowMapper = (rs, rowNum) ->
             new MpaRating(rs.getInt("mpa_id"), rs.getString("name"));
+    private final String sqlGetAll = "SELECT mpa_id, name FROM mpa";
+    private final String sqlFindById = "SELECT * FROM mpa WHERE mpa_id = ?";
 
     @Autowired
     public MpaDbStorage(JdbcTemplate jdbcTemplate) {
@@ -28,9 +30,8 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public List<MpaRating> findAll() {
-        String sql = "SELECT mpa_id, name FROM mpa";
         log.info("Выполнение запроса на получение всех MPA рейтингов.");
-        return jdbcTemplate.query(sql, mpaRatingRowMapper);
+        return jdbcTemplate.query(sqlGetAll, mpaRatingRowMapper);
     }
 
     @Override
@@ -40,10 +41,9 @@ public class MpaDbStorage implements MpaStorage {
         if (mpaId.isEmpty()) {
             throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует МРА с таким id " + id);
         }
-        String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
         log.info("Выполнение запроса на получение MPA рейтинга с ID: {}", id);
         try {
-            return jdbcTemplate.query(sql, mpaRatingRowMapper, id).stream().findAny();
+            return jdbcTemplate.query(sqlFindById, mpaRatingRowMapper, id).stream().findAny();
         } catch (Exception e) {
             log.error("Ошибка при выполнении запроса на получение MPA рейтинга с ID: {}", id, e);
             throw e;

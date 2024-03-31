@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao;
 
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.List;
 import java.util.Set;
 
 public interface FriendshipsStorage {
@@ -12,5 +11,5 @@ public interface FriendshipsStorage {
 
     Set<User> getAllSameFriends(long id, long otherId);
 
-    List<User> getAllFriends(long id);
+    Set<User> getAllFriends(long id);
 }

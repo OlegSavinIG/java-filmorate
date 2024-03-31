@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -26,9 +25,6 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        if (getStorage().stream().map(i -> i.getName()).anyMatch(i -> i.equals(film.getName()))) {
-            throw new AlreadyExistException("Такой фильм уже существует");
-        }
         return filmStorage.add(film);
     }
 
@@ -48,9 +44,6 @@ public class FilmService {
     }
 
     public Film getById(long id) {
-        if (!filmExist(id)) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Такой фильм не существует");
-        }
         return filmStorage.getById(id);
     }
 

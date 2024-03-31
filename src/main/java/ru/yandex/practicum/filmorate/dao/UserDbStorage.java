@@ -20,20 +20,25 @@ import java.util.Optional;
 @Repository
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final UserMapper userRowMapper = new UserMapper();
+    private final UserMapper userRowMapper;
+    private final String sqlAdd = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+    private final String sqlUpdate = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
+    private final String sqlDelete = "DELETE FROM users WHERE user_id = ?";
+    private final String sqlGetAll = "SELECT * FROM users";
+    private final String sqlGetById = "SELECT * FROM users WHERE user_id = ?";
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, UserMapper userRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.userRowMapper = userRowMapper;
     }
 
     @Override
     public User add(User user) {
-        String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
         log.info("Добавление пользователя: {}", user);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"user_id"});
+            PreparedStatement ps = connection.prepareStatement(sqlAdd, new String[]{"user_id"});
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
             ps.setString(3, user.getName());
@@ -47,26 +52,23 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-        String sql = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
         log.info("Обновление пользователя с ID: {}", user.getId());
-        jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), Date.valueOf(user.getBirthday()), user.getId());
+        jdbcTemplate.update(sqlUpdate, user.getEmail(), user.getLogin(), user.getName(), Date.valueOf(user.getBirthday()), user.getId());
         log.debug("Пользователь обновлен: {}", user);
         return user;
     }
 
     @Override
     public void delete(long id) {
-        String sql = "DELETE FROM users WHERE user_id = ?";
         log.info("Удаление пользователя с ID: {}", id);
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sqlDelete, id);
         log.debug("Пользователь удален с ID: {}", id);
     }
 
     @Override
-    public List<User> getStorage() {
-        String sql = "SELECT * FROM users";
+    public List<User> getAllUsers() {
         log.info("Получение списка всех пользователей");
-        return jdbcTemplate.query(sql, userRowMapper);
+        return jdbcTemplate.query(sqlGetAll, userRowMapper);
     }
 
     @Override
@@ -74,11 +76,10 @@ public class UserDbStorage implements UserStorage {
         String sqlChecker = "Select user_id from users where user_id = ?";
         List<Long> userId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getLong("user_id"));
         if (userId.isEmpty()) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует Ппльзователя с таким id " + id);
+            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует пользователя с таким id " + id);
         }
-        String sql = "SELECT * FROM users WHERE user_id = ?";
         log.info("Получение пользователя с ID: {}", id);
-        User user = jdbcTemplate.queryForObject(sql, userRowMapper, id);
+        User user = jdbcTemplate.queryForObject(sqlGetById, userRowMapper, id);
         return Optional.ofNullable(user);
     }
 }

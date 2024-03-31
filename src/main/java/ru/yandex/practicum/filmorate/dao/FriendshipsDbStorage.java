@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +17,17 @@ import java.util.stream.Collectors;
 public class FriendshipsDbStorage implements FriendshipsStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserDbStorage userStorage;
+    private final String sqlAdd = "INSERT into friendships (user_id, friend_id) values (?, ?)";
+
+    private final String sqlDelete = "DELETE from friendships  WHERE user_id = ? AND friend_id = ?";
+
+    private final String sqlGetSame = "SELECT f1.friend_id " +
+            "FROM friendships f1 " +
+            "JOIN friendships f2 ON f1.friend_id = f2.friend_id " +
+            "WHERE f1.user_id = ? AND f2.user_id = ?";
+
+    private final String sqlAllFriends = "SELECT friend_id from friendships where user_id = ?";
+
 
     @Autowired
     public FriendshipsDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userStorage) {
@@ -25,31 +38,24 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
 
     @Override
     public void addFriend(long firstUserId, long secondUserId) {
-        if (!userStorage.getById(firstUserId).isEmpty() && !userStorage.getById(secondUserId).isEmpty()) {
-            String sql = "INSERT into friendships (user_id, friend_id) values (?, ?)";
+        if (isUserExists(firstUserId) && isUserExists(secondUserId)) {
             log.info("Добавление дружбы между пользователями {} и {}", firstUserId, secondUserId);
-            jdbcTemplate.update(sql, firstUserId, secondUserId);
-            jdbcTemplate.update(sql, secondUserId, firstUserId);
+            jdbcTemplate.update(sqlAdd, firstUserId, secondUserId);
         }
     }
 
     @Override
     public void deleteFriend(long firstUserId, long secondUserId) {
-        if (!userStorage.getById(firstUserId).isEmpty() && !userStorage.getById(secondUserId).isEmpty()) {
-            String sql = "DELETE from friendships  WHERE user_id = ? AND friend_id = ?";
+        if (isUserExists(firstUserId) && isUserExists(secondUserId)) {
             log.info("Удаление дружбы между пользователями {} и {}", firstUserId, secondUserId);
-            jdbcTemplate.update(sql, firstUserId, secondUserId);
+            jdbcTemplate.update(sqlDelete, firstUserId, secondUserId);
         }
     }
 
     @Override
     public Set<User> getAllSameFriends(long id, long otherId) {
-        String sql = "SELECT f1.friend_id " +
-                "FROM friendships f1 " +
-                "JOIN friendships f2 ON f1.friend_id = f2.friend_id " +
-                "WHERE f1.user_id = ? AND f2.user_id = ?";
         log.info("Поиск общих друзей между пользователями {} и {}", id, otherId);
-        List<Long> friendIds = jdbcTemplate.query(sql, new Object[]{id, otherId}, (rs, rowNum) -> rs.getLong("friend_id"));
+        List<Long> friendIds = jdbcTemplate.query(sqlGetSame, new Object[]{id, otherId}, (rs, rowNum) -> rs.getLong("friend_id"));
         Set<User> commonFriends = friendIds.stream()
                 .map(i -> userStorage.getById(i).get())
                 .collect(Collectors.toSet());
@@ -57,15 +63,25 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
     }
 
     @Override
-    public List<User> getAllFriends(long id) {
-        if (!userStorage.getById(id).isEmpty()) {
-            String sql = "SELECT * from friendships where user_id = ?";
+    public Set<User> getAllFriends(long id) {
+        if (isUserExists(id)) {
             log.info("Поиск друзей пользователя {}", id);
-            List<Long> friendsId = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("friend_id"), id);
-            List<User> friends = friendsId.stream()
-                    .map(i -> userStorage.getById(i).get())
-                    .collect(Collectors.toList());
+            List<Long> friendsId = jdbcTemplate.query(sqlAllFriends, (rs, rowNum) -> rs.getLong("friend_id"), id);
+            if (friendsId.isEmpty()) {
+                log.info("Нет друзей у пользователя {}", id);
+                return new HashSet<>();
+            }
+            Set<User> friends = friendsId.stream()
+                    .map(i -> userStorage.getById(i).orElse(null))
+                    .collect(Collectors.toSet());
             return friends;
-        } return null;
+        }
+        log.warn("Пользователь {} не найден", id);
+        return Collections.emptySet();
     }
+
+    private boolean isUserExists(long userId) {
+        return userStorage.getById(userId).isPresent();
+    }
+
 }
