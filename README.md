@@ -1,8 +1,6 @@
 # java-filmorate
 Template repository for Filmorate project.
 
-# java-filmorate
-Template repository for Filmorate project.
 
 SELECT f.name, f.description, f.release_date, f.duration, m.name AS mpa_rating
 FROM films f
