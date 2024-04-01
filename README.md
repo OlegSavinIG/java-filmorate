@@ -17,4 +17,4 @@ SELECT fl.name, fl.description
 FROM likes l
 JOIN films fl ON l.film_id = fl.film_id
 WHERE l.user_id = (SELECT user_id FROM users WHERE name = 'имя пользователя');
-![Filmorate db](https://github.com/OlegSavinIG/java-filmorate/assets/134596179/c25cb49e-dc10-4317-aafa-f6ce1e39d895)
+![Untitled diagram-2024-04-01-202716](https://github.com/OlegSavinIG/java-filmorate/assets/134596179/66d8aea7-a253-4925-bcef-e6dc08b97af3)
